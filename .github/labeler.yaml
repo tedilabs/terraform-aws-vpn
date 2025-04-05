@@ -3,3 +3,8 @@
 - changed-files:
   - any-glob-to-any-file:
     - modules/customer-gateway/**/*
+
+":floppy_disk: vpn-connection":
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/vpn-connection/**/*

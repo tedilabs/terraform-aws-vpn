@@ -43,3 +43,6 @@
 - color: "fbca04"
   description: "This issue or pull request is related to customer-gateway module."
   name: ":floppy_disk: customer-gateway"
+- color: "fbca04"
+  description: "This issue or pull request is related to vpn-connection module."
+  name: ":floppy_disk: vpn-connection"

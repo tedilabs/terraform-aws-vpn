@@ -7,6 +7,7 @@
 Terraform module which creates VPN related resources on AWS.
 
 - [customer-gateway](./modules/customer-gateway/)
+- [vpn-connection](./modules/vpn-connection/)
 
 
 ## Target AWS Services
