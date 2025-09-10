@@ -276,3 +276,19 @@ output "tunnel2_ike" {
 #     if !contains(["customer_gateway_id", "customer_gateway_configuration", "type", "tags", "tags_all", "arn", "id", "enable_acceleration", "static_routes_only", "vpn_gateway_id", "transit_gateway_id", "core_network_arn", "core_network_attachment_arn", "tunnel_inside_ip_version", "local_ipv4_network_cidr", "local_ipv6_network_cidr", "remote_ipv4_network_cidr", "remote_ipv6_network_cidr", "transit_gateway_attachment_id", "outside_ip_address_type", "tunnel1_address", "tunnel1_inside_cidr", "tunnel1_inside_ipv6_cidr", "tunnel1_cgw_inside_address", "tunnel1_vgw_inside_address", "tunnel1_preshared_key", "tunnel1_ike_versions", "tunnel1_phase1_encryption_algorithms", "tunnel1_phase1_integrity_algorithms", "tunnel1_phase1_dh_group_numbers", "tunnel1_phase1_lifetime_seconds", "tunnel1_phase2_encryption_algorithms", "tunnel1_phase2_integrity_algorithms", "tunnel1_phase2_dh_group_numbers", "tunnel1_phase2_lifetime_seconds", "tunnel1_dpd_timeout_seconds", "tunnel1_dpd_timeout_action", "tunnel1_enable_tunnel_lifecycle_control", "tunnel1_bgp_asn", "tunnel1_bgp_holdtime", "tunnel1_startup_action", "tunnel1_replay_window_size", "tunnel1_rekey_margin_time_seconds", "tunnel1_rekey_fuzz_percentage", "tunnel2_address", "tunnel2_inside_cidr", "tunnel2_inside_ipv6_cidr", "tunnel2_cgw_inside_address", "tunnel2_vgw_inside_address", "tunnel2_preshared_key", "tunnel2_ike_versions", "tunnel2_phase1_encryption_algorithms", "tunnel2_phase1_integrity_algorithms", "tunnel2_phase1_dh_group_numbers", "tunnel2_phase1_lifetime_seconds", "tunnel2_phase2_encryption_algorithms", "tunnel2_phase2_integrity_algorithms", "tunnel2_phase2_dh_group_numbers", "tunnel2_phase2_lifetime_seconds", "tunnel2_dpd_timeout_seconds", "tunnel2_dpd_timeout_action", "tunnel2_enable_tunnel_lifecycle_control", "tunnel2_bgp_asn", "tunnel2_bgp_holdtime", "tunnel2_startup_action", "tunnel2_replay_window_size", "tunnel2_rekey_margin_time_seconds", "tunnel2_rekey_fuzz_percentage", "vgw_telemetry"], k)
 #   }
 # }
+
+output "resource_group" {
+  description = "The resource group created to manage resources in this module."
+  value = merge(
+    {
+      enabled = var.resource_group.enabled && var.module_tags_enabled
+    },
+    (var.resource_group.enabled && var.module_tags_enabled
+      ? {
+        arn  = module.resource_group[0].arn
+        name = module.resource_group[0].name
+      }
+      : {}
+    )
+  )
+}
