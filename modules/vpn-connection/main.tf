@@ -17,6 +17,8 @@ locals {
 data "aws_default_tags" "this" {}
 
 data "aws_customer_gateway" "this" {
+  region = var.region
+
   id = var.customer_gateway.id
 }
 
@@ -39,6 +41,8 @@ locals {
 ###################################################
 
 resource "aws_vpn_connection" "this" {
+  region = var.region
+
   static_routes_only  = var.routing_type == "STATIC"
   enable_acceleration = var.target_gateway.type == "TRANSIT_GATEWAY" ? var.acceleration_enabled : null
 
@@ -47,7 +51,10 @@ resource "aws_vpn_connection" "this" {
   type                    = data.aws_customer_gateway.this.type
   customer_gateway_id     = var.customer_gateway.id
   outside_ip_address_type = var.target_gateway.type == "TRANSIT_GATEWAY" ? var.customer_gateway.outside_ip_address_type : null
-  # transport_transit_gateway_attachment_id - (Required when outside_ip_address_type is set to PrivateIpv4). The attachment ID of the Transit Gateway attachment to Direct Connect Gateway. The ID is obtained through a data source only.
+  transport_transit_gateway_attachment_id = (var.target_gateway.type == "TRANSIT_GATEWAY" && var.customer_gateway.outside_ip_address_type == "PrivateIpv4"
+    ? var.customer_gateway.transport_transit_gateway_attachment
+    : null
+  )
 
 
   ## Target Gateway
@@ -69,6 +76,18 @@ resource "aws_vpn_connection" "this" {
 
   tunnel1_enable_tunnel_lifecycle_control = var.tunnel1_tunnel_endpoint_lifecycle_control_enabled
 
+  tunnel1_log_options {
+    dynamic "cloudwatch_log_options" {
+      for_each = var.tunnel1_activity_log.cloudwatch.enabled ? [var.tunnel1_activity_log.cloudwatch] : []
+
+      content {
+        log_enabled       = cloudwatch_log_options.value.enabled
+        log_group_arn     = cloudwatch_log_options.value.log_group
+        log_output_format = cloudwatch_log_options.value.log_format
+      }
+    }
+  }
+
   tunnel1_preshared_key = var.tunnel1_preshared_key
 
 
@@ -76,8 +95,6 @@ resource "aws_vpn_connection" "this" {
   tunnel1_startup_action      = lower(var.tunnel1_startup_action)
   tunnel1_dpd_timeout_seconds = var.tunnel1_dpd.timeout
   tunnel1_dpd_timeout_action  = lower(var.tunnel1_dpd.timeout_action)
-  # tunnel1_log_options - (Optional) Options for logging VPN tunnel activity. See Log Options below for more details.
-
 
 
   ## Tunnel 1 IKE Negotiation
@@ -102,6 +119,18 @@ resource "aws_vpn_connection" "this" {
   tunnel2_inside_ipv6_cidr = var.tunnel2_inside_ipv6_cidr
 
   tunnel2_enable_tunnel_lifecycle_control = var.tunnel2_tunnel_endpoint_lifecycle_control_enabled
+
+  tunnel2_log_options {
+    dynamic "cloudwatch_log_options" {
+      for_each = var.tunnel2_activity_log.cloudwatch.enabled ? [var.tunnel2_activity_log.cloudwatch] : []
+
+      content {
+        log_enabled       = cloudwatch_log_options.value.enabled
+        log_group_arn     = cloudwatch_log_options.value.log_group
+        log_output_format = cloudwatch_log_options.value.log_format
+      }
+    }
+  }
 
   tunnel2_preshared_key = var.tunnel2_preshared_key
 
@@ -129,9 +158,6 @@ resource "aws_vpn_connection" "this" {
   tunnel2_phase2_lifetime_seconds      = var.tunnel2_ike_phase2.lifetime
 
 
-  # tunnel2_log_options - (Optional) Options for logging VPN tunnel activity. See Log Options below for more details.
-
-
   tags = merge(
     {
       "Name" = local.metadata.name
@@ -149,6 +175,8 @@ resource "aws_ec2_tag" "this" {
     local.common_tags,
   )
 
+  region = var.region
+
   resource_id = aws_vpn_connection.this.transit_gateway_attachment_id
   key         = each.key
   value       = each.value
@@ -161,6 +189,8 @@ resource "aws_ec2_tag" "this" {
 
 resource "aws_vpn_connection_route" "this" {
   for_each = toset(var.static_routing_destination_cidrs)
+
+  region = var.region
 
   vpn_connection_id      = aws_vpn_connection.this.id
   destination_cidr_block = each.value

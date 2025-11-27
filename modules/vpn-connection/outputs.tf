@@ -1,3 +1,8 @@
+output "region" {
+  description = "The AWS region this module resources resides in."
+  value       = aws_vpn_connection.this.region
+}
+
 output "id" {
   description = "The ID of the VPN connection."
   value       = aws_vpn_connection.this.id
@@ -33,10 +38,12 @@ output "customer_gateway" {
   The information for the customer gateway of the VPN connection.
     `id` - The ID of the customer gateway.
     `outside_ip_address_type` - Whether the customer gateway device is using a public or private IPv4 address.
+    `transport_transit_gateway_attachment` - The attachment ID of the transport transit gateway for the AWS Direct Connect Gateway to be used for the private IP VPN connection.
   EOF
   value = {
-    id                      = aws_vpn_connection.this.customer_gateway_id
-    outside_ip_address_type = aws_vpn_connection.this.outside_ip_address_type
+    id                                   = aws_vpn_connection.this.customer_gateway_id
+    outside_ip_address_type              = aws_vpn_connection.this.outside_ip_address_type
+    transport_transit_gateway_attachment = aws_vpn_connection.this.transport_transit_gateway_attachment_id
   }
 }
 
@@ -137,6 +144,20 @@ output "tunnel1" {
   }
 }
 
+output "tunnel1_activity_log" {
+  description = <<EOF
+  The configuration of tunnel activity log for the first VPN tunnel.
+    `cloudwatch` - The configuration of CloudWatch Logs for tunnel activity log.
+  EOF
+  value = {
+    cloudwatch = {
+      enabled    = one(aws_vpn_connection.this.tunnel1_log_options[0].cloudwatch_log_options[*].log_enabled)
+      log_group  = one(aws_vpn_connection.this.tunnel1_log_options[0].cloudwatch_log_options[*].log_group_arn)
+      log_format = one(aws_vpn_connection.this.tunnel1_log_options[0].cloudwatch_log_options[*].log_output_format)
+    }
+  }
+}
+
 output "tunnel1_preshared_key" {
   description = "The preshared key of the first VPN tunnel."
   value       = aws_vpn_connection.this.tunnel1_preshared_key
@@ -216,6 +237,20 @@ output "tunnel2" {
   }
 }
 
+output "tunnel2_activity_log" {
+  description = <<EOF
+  The configuration of tunnel activity log for the second VPN tunnel.
+    `cloudwatch` - The configuration of CloudWatch Logs for tunnel activity log.
+  EOF
+  value = {
+    cloudwatch = {
+      enabled    = one(aws_vpn_connection.this.tunnel2_log_options[0].cloudwatch_log_options[*].log_enabled)
+      log_group  = one(aws_vpn_connection.this.tunnel2_log_options[0].cloudwatch_log_options[*].log_group_arn)
+      log_format = one(aws_vpn_connection.this.tunnel2_log_options[0].cloudwatch_log_options[*].log_output_format)
+    }
+  }
+}
+
 output "tunnel2_preshared_key" {
   description = "The preshared key of the second VPN tunnel."
   value       = aws_vpn_connection.this.tunnel2_preshared_key
@@ -268,15 +303,6 @@ output "tunnel2_ike" {
   }
 }
 
-# output "debug" {
-#   description = "For debug purpose"
-#   value = {
-#     for k, v in aws_vpn_connection.this :
-#     k => v
-#     if !contains(["customer_gateway_id", "customer_gateway_configuration", "type", "tags", "tags_all", "arn", "id", "enable_acceleration", "static_routes_only", "vpn_gateway_id", "transit_gateway_id", "core_network_arn", "core_network_attachment_arn", "tunnel_inside_ip_version", "local_ipv4_network_cidr", "local_ipv6_network_cidr", "remote_ipv4_network_cidr", "remote_ipv6_network_cidr", "transit_gateway_attachment_id", "outside_ip_address_type", "tunnel1_address", "tunnel1_inside_cidr", "tunnel1_inside_ipv6_cidr", "tunnel1_cgw_inside_address", "tunnel1_vgw_inside_address", "tunnel1_preshared_key", "tunnel1_ike_versions", "tunnel1_phase1_encryption_algorithms", "tunnel1_phase1_integrity_algorithms", "tunnel1_phase1_dh_group_numbers", "tunnel1_phase1_lifetime_seconds", "tunnel1_phase2_encryption_algorithms", "tunnel1_phase2_integrity_algorithms", "tunnel1_phase2_dh_group_numbers", "tunnel1_phase2_lifetime_seconds", "tunnel1_dpd_timeout_seconds", "tunnel1_dpd_timeout_action", "tunnel1_enable_tunnel_lifecycle_control", "tunnel1_bgp_asn", "tunnel1_bgp_holdtime", "tunnel1_startup_action", "tunnel1_replay_window_size", "tunnel1_rekey_margin_time_seconds", "tunnel1_rekey_fuzz_percentage", "tunnel2_address", "tunnel2_inside_cidr", "tunnel2_inside_ipv6_cidr", "tunnel2_cgw_inside_address", "tunnel2_vgw_inside_address", "tunnel2_preshared_key", "tunnel2_ike_versions", "tunnel2_phase1_encryption_algorithms", "tunnel2_phase1_integrity_algorithms", "tunnel2_phase1_dh_group_numbers", "tunnel2_phase1_lifetime_seconds", "tunnel2_phase2_encryption_algorithms", "tunnel2_phase2_integrity_algorithms", "tunnel2_phase2_dh_group_numbers", "tunnel2_phase2_lifetime_seconds", "tunnel2_dpd_timeout_seconds", "tunnel2_dpd_timeout_action", "tunnel2_enable_tunnel_lifecycle_control", "tunnel2_bgp_asn", "tunnel2_bgp_holdtime", "tunnel2_startup_action", "tunnel2_replay_window_size", "tunnel2_rekey_margin_time_seconds", "tunnel2_rekey_fuzz_percentage", "vgw_telemetry"], k)
-#   }
-# }
-
 output "resource_group" {
   description = "The resource group created to manage resources in this module."
   value = merge(
@@ -291,4 +317,13 @@ output "resource_group" {
       : {}
     )
   )
+}
+
+output "debug" {
+  description = "For debug purpose"
+  value = {
+    for k, v in aws_vpn_connection.this :
+    k => v
+    if !contains(["customer_gateway_id", "customer_gateway_configuration", "type", "tags", "tags_all", "arn", "id", "enable_acceleration", "static_routes_only", "vpn_gateway_id", "transit_gateway_id", "core_network_arn", "core_network_attachment_arn", "tunnel_inside_ip_version", "local_ipv4_network_cidr", "local_ipv6_network_cidr", "remote_ipv4_network_cidr", "remote_ipv6_network_cidr", "transit_gateway_attachment_id", "outside_ip_address_type", "tunnel1_address", "tunnel1_inside_cidr", "tunnel1_inside_ipv6_cidr", "tunnel1_cgw_inside_address", "tunnel1_vgw_inside_address", "tunnel1_preshared_key", "tunnel1_ike_versions", "tunnel1_phase1_encryption_algorithms", "tunnel1_phase1_integrity_algorithms", "tunnel1_phase1_dh_group_numbers", "tunnel1_phase1_lifetime_seconds", "tunnel1_phase2_encryption_algorithms", "tunnel1_phase2_integrity_algorithms", "tunnel1_phase2_dh_group_numbers", "tunnel1_phase2_lifetime_seconds", "tunnel1_dpd_timeout_seconds", "tunnel1_dpd_timeout_action", "tunnel1_enable_tunnel_lifecycle_control", "tunnel1_bgp_asn", "tunnel1_bgp_holdtime", "tunnel1_startup_action", "tunnel1_replay_window_size", "tunnel1_rekey_margin_time_seconds", "tunnel1_rekey_fuzz_percentage", "tunnel1_log_options", "tunnel2_address", "tunnel2_inside_cidr", "tunnel2_inside_ipv6_cidr", "tunnel2_cgw_inside_address", "tunnel2_vgw_inside_address", "tunnel2_preshared_key", "tunnel2_ike_versions", "tunnel2_phase1_encryption_algorithms", "tunnel2_phase1_integrity_algorithms", "tunnel2_phase1_dh_group_numbers", "tunnel2_phase1_lifetime_seconds", "tunnel2_phase2_encryption_algorithms", "tunnel2_phase2_integrity_algorithms", "tunnel2_phase2_dh_group_numbers", "tunnel2_phase2_lifetime_seconds", "tunnel2_dpd_timeout_seconds", "tunnel2_dpd_timeout_action", "tunnel2_enable_tunnel_lifecycle_control", "tunnel2_bgp_asn", "tunnel2_bgp_holdtime", "tunnel2_startup_action", "tunnel2_replay_window_size", "tunnel2_rekey_margin_time_seconds", "tunnel2_rekey_fuzz_percentage", "tunnel2_log_options", "vgw_telemetry", "transport_transit_gateway_attachment_id"], k)
+  }
 }

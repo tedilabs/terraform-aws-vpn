@@ -1,3 +1,10 @@
+variable "region" {
+  description = "(Optional) The region in which to create the module resources. If not provided, the module resources will be created in the provider's configured region."
+  type        = string
+  default     = null
+  nullable    = true
+}
+
 variable "name" {
   description = "(Required) A name for the VPN connection."
   type        = string
@@ -49,16 +56,25 @@ variable "customer_gateway" {
   (Required) The configuration for the customer gateway of the VPN connection. `customer_gateway` block as defined below.
     (Required) `id` - The ID of the customer gateway.
     (Optional) `outside_ip_address_type` - Whether the customer gateway device is using a public or private IPv4 address. Valid values are `PublicIpv4` and `PrivateIpv4`. Defaults to `PublicIpv4`. Configure `PrivateIpv4` if you are creating a private IP VPN connection over AWS Direct Connect.
+    (Optional) `transport_transit_gateway_attachment` - The attachment ID of the transport transit gateway for the AWS Direct Connect Gateway to be used for the private IP VPN connection. The ID is obtained through a data source only. Required when `outside_ip_address_type` is set to `PrivateIpv4`.
   EOF
   type = object({
-    id                      = string
-    outside_ip_address_type = optional(string, "PublicIpv4")
+    id                                   = string
+    outside_ip_address_type              = optional(string, "PublicIpv4")
+    transport_transit_gateway_attachment = optional(string)
   })
   nullable = false
 
   validation {
     condition     = contains(["PublicIpv4", "PrivateIpv4"], var.customer_gateway.outside_ip_address_type)
     error_message = "Valid values for `customer_gateway.outside_ip_address_type` are `PublicIpv4`, `PrivateIpv4`."
+  }
+  validation {
+    condition = anytrue([
+      var.customer_gateway.outside_ip_address_type != "PrivateIpv4",
+      var.customer_gateway.outside_ip_address_type == "PrivateIpv4" && var.customer_gateway.transport_transit_gateway_attachment != null
+    ])
+    error_message = "`customer_gateway.transport_transit_gateway_attachment` is required when `outside_ip_address_type` is set to `PrivateIpv4`."
   }
 }
 
@@ -178,6 +194,37 @@ variable "tunnel1_tunnel_endpoint_lifecycle_control_enabled" {
   type        = bool
   default     = false
   nullable    = false
+}
+
+variable "tunnel1_activity_log" {
+  description = <<EOF
+  (Optional) A configuration of tunnel activity log for the first VPN tunnel. `tunnel1_activity_log` block as defined below.
+    (Optional) `cloudwatch` - A configuration of CloudWatch Logs for tunnel activity log. Tunnel activity log captures log messages for IPsec activity and DPD protocol messages. `cloudwatch` block as defined below.
+      (Optional) `enabled` - Whether to enable sending tunnel activity log messages to CloudWatch Logs. Defaults to `false`.
+      (Optional) `log_group` - The ARN (Amazon Resource Name) of the CloudWatch log group to send logs to.
+      (Optional) `log_format` - The log format. Valid values are `json` and `text`. Defaults to `json`.
+  EOF
+  type = object({
+    cloudwatch = optional(object({
+      enabled    = optional(bool, false)
+      log_group  = optional(string)
+      log_format = optional(string, "json")
+    }), {}),
+  })
+  default  = {}
+  nullable = false
+
+  validation {
+    condition = anytrue([
+      !var.tunnel1_activity_log.cloudwatch.enabled,
+      var.tunnel1_activity_log.cloudwatch.enabled && var.tunnel1_activity_log.cloudwatch.log_group != null,
+    ])
+    error_message = "Value for `cloudwatch.log_group` should be provided when `cloudwatch.enabled` is set to `true`."
+  }
+  validation {
+    condition     = contains(["json", "text"], var.tunnel1_activity_log.cloudwatch.log_format)
+    error_message = "Valid values for `cloudwatch.log_format` are `json`, `text`."
+  }
 }
 
 variable "tunnel1_preshared_key" {
@@ -428,6 +475,37 @@ variable "tunnel2_tunnel_endpoint_lifecycle_control_enabled" {
   nullable    = false
 }
 
+variable "tunnel2_activity_log" {
+  description = <<EOF
+  (Optional) A configuration of tunnel activity log for the second VPN tunnel. `tunnel2_activity_log` block as defined below.
+    (Optional) `cloudwatch` - A configuration of CloudWatch Logs for tunnel activity log. Tunnel activity log captures log messages for IPsec activity and DPD protocol messages. `cloudwatch` block as defined below.
+      (Optional) `enabled` - Whether to enable sending tunnel activity log messages to CloudWatch Logs. Defaults to `false`.
+      (Optional) `log_group` - The ARN (Amazon Resource Name) of the CloudWatch log group to send logs to.
+      (Optional) `log_format` - The log format. Valid values are `json` and `text`. Defaults to `json`.
+  EOF
+  type = object({
+    cloudwatch = optional(object({
+      enabled    = optional(bool, false)
+      log_group  = optional(string)
+      log_format = optional(string, "json")
+    }), {}),
+  })
+  default  = {}
+  nullable = false
+
+  validation {
+    condition = anytrue([
+      !var.tunnel2_activity_log.cloudwatch.enabled,
+      var.tunnel2_activity_log.cloudwatch.enabled && var.tunnel2_activity_log.cloudwatch.log_group != null,
+    ])
+    error_message = "Value for `cloudwatch.log_group` should be provided when `cloudwatch.enabled` is set to `true`."
+  }
+  validation {
+    condition     = contains(["json", "text"], var.tunnel2_activity_log.cloudwatch.log_format)
+    error_message = "Valid values for `cloudwatch.log_format` are `json`, `text`."
+  }
+}
+
 variable "tunnel2_preshared_key" {
   description = "(Optional) The preshared key of the second VPN tunnel. The preshared key must be between 8 and 64 characters in length and cannot start with zero(0). Allowed characters are alphanumeric characters, periods(.) and underscores(_). Defaults to be randomly generated by Amazon."
   type        = string
@@ -657,9 +735,6 @@ variable "module_tags_enabled" {
 ###################################################
 # Resource Group
 ###################################################
-
-
-
 
 variable "resource_group" {
   description = <<EOF
