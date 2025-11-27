@@ -1,3 +1,8 @@
+output "region" {
+  description = "The AWS region this module resources resides in."
+  value       = aws_customer_gateway.this.region
+}
+
 output "id" {
   description = "The ID of the customer gateway."
   value       = aws_customer_gateway.this.id
@@ -38,15 +43,6 @@ output "certificate" {
   value       = aws_customer_gateway.this.certificate_arn
 }
 
-# output "debug" {
-#   description = "For debug purpose"
-#   value = {
-#     for k, v in aws_customer_gateway.this :
-#     k => v
-#     if !contains(["device_name", "type", "ip_address", "tags", "tags_all", "arn", "id", "certificate_arn", "bgp_asn", "bgp_asn_extended"], k)
-#   }
-# }
-
 output "resource_group" {
   description = "The resource group created to manage resources in this module."
   value = merge(
@@ -62,3 +58,12 @@ output "resource_group" {
     )
   )
 }
+
+# output "debug" {
+#   description = "For debug purpose"
+#   value = {
+#     for k, v in aws_customer_gateway.this :
+#     k => v
+#     if !contains(["device_name", "type", "ip_address", "tags", "tags_all", "arn", "id", "certificate_arn", "bgp_asn", "bgp_asn_extended"], k)
+#   }
+# }

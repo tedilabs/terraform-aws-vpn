@@ -20,6 +20,8 @@ locals {
 ###################################################
 
 resource "aws_customer_gateway" "this" {
+  region = var.region
+
   device_name      = var.device
   ip_address       = var.ip_address
   bgp_asn          = var.asn >= 2147483648 ? null : var.asn
