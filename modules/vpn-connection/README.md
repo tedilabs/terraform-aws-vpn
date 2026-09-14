@@ -10,7 +10,7 @@ This module creates following resources.
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12 |
 | <a name="requirement_assert"></a> [assert](#requirement\_assert) | >= 0.16 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.12 |
@@ -18,19 +18,19 @@ This module creates following resources.
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.23.0 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.12 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | tedilabs/misc/aws//modules/resource-group | ~> 0.12.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_ec2_tag.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ec2_tag) | resource |
 | [aws_vpn_connection.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpn_connection) | resource |
 | [aws_vpn_connection_route.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpn_connection_route) | resource |
@@ -40,7 +40,7 @@ This module creates following resources.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_customer_gateway"></a> [customer\_gateway](#input\_customer\_gateway) | (Required) The configuration for the customer gateway of the VPN connection. `customer_gateway` block as defined below.<br/>    (Required) `id` - The ID of the customer gateway.<br/>    (Optional) `outside_ip_address_type` - Whether the customer gateway device is using a public or private IPv4 address. Valid values are `PublicIpv4` and `PrivateIpv4`. Defaults to `PublicIpv4`. Configure `PrivateIpv4` if you are creating a private IP VPN connection over AWS Direct Connect.<br/>    (Optional) `transport_transit_gateway_attachment` - The attachment ID of the transport transit gateway for the AWS Direct Connect Gateway to be used for the private IP VPN connection. The ID is obtained through a data source only. Required when `outside_ip_address_type` is set to `PrivateIpv4`. | <pre>object({<br/>    id                                   = string<br/>    outside_ip_address_type              = optional(string, "PublicIpv4")<br/>    transport_transit_gateway_attachment = optional(string)<br/>  })</pre> | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | (Required) A name for the VPN connection. | `string` | n/a | yes |
 | <a name="input_acceleration_enabled"></a> [acceleration\_enabled](#input\_acceleration\_enabled) | (Optional) Whether to enable acceleration for the VPN connection. Supports only for a `TRANSIT_GATEWAY` type target gateway. Defaults to `false`. | `bool` | `false` | no |
@@ -84,7 +84,7 @@ This module creates following resources.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_acceleration_enabled"></a> [acceleration\_enabled](#output\_acceleration\_enabled) | Whether acceleration for the VPN connection is enabled. |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN (Amazon Resource Name) of the VPN connection. |
 | <a name="output_core_network"></a> [core\_network](#output\_core\_network) | The configuration for the core network of the VPN connection.<br/>    `arn` - The ARN of the core network.<br/>    `attachment` - The ARN of the core network attachment. |
