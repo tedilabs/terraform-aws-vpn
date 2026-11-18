@@ -236,7 +236,7 @@ variable "tunnel1_preshared_key" {
 
   validation {
     condition = (var.tunnel1_preshared_key != null
-      ? can(regex("^(?!0)[a-zA-Z0-9._]{8,64}$", var.tunnel1_preshared_key))
+      ? can(regex("^[a-zA-Z1-9._][a-zA-Z0-9._]{7,63}$", var.tunnel1_preshared_key))
       : true
     )
     error_message = "The preshared key must be between 8 and 64 characters, cannot start with '0', and can only contain alphanumeric characters, periods (.), or underscores (_)."
@@ -515,7 +515,7 @@ variable "tunnel2_preshared_key" {
 
   validation {
     condition = (var.tunnel2_preshared_key != null
-      ? can(regex("^(?!0)[a-zA-Z0-9._]{8,64}$", var.tunnel2_preshared_key))
+      ? can(regex("^[a-zA-Z1-9._][a-zA-Z0-9._]{7,63}$", var.tunnel2_preshared_key))
       : true
     )
     error_message = "The preshared key must be between 8 and 64 characters, cannot start with '0', and can only contain alphanumeric characters, periods (.), or underscores (_)."
