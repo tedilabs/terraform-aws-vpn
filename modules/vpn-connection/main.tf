@@ -168,11 +168,14 @@ resource "aws_vpn_connection" "this" {
 }
 
 resource "aws_ec2_tag" "this" {
-  for_each = merge(
-    {
-      "Name" = local.metadata.name
-    },
-    local.common_tags,
+  for_each = (var.target_gateway.type == "TRANSIT_GATEWAY"
+    ? merge(
+      {
+        "Name" = local.metadata.name
+      },
+      local.common_tags,
+    )
+    : {}
   )
 
   region = var.region
