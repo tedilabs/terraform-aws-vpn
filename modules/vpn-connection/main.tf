@@ -77,14 +77,10 @@ resource "aws_vpn_connection" "this" {
   tunnel1_enable_tunnel_lifecycle_control = var.tunnel1_tunnel_endpoint_lifecycle_control_enabled
 
   tunnel1_log_options {
-    dynamic "cloudwatch_log_options" {
-      for_each = var.tunnel1_activity_log.cloudwatch.enabled ? [var.tunnel1_activity_log.cloudwatch] : []
-
-      content {
-        log_enabled       = cloudwatch_log_options.value.enabled
-        log_group_arn     = cloudwatch_log_options.value.log_group
-        log_output_format = cloudwatch_log_options.value.log_format
-      }
+    cloudwatch_log_options {
+      log_enabled       = var.tunnel1_activity_log.cloudwatch.enabled
+      log_group_arn     = var.tunnel1_activity_log.cloudwatch.enabled ? var.tunnel1_activity_log.cloudwatch.log_group : null
+      log_output_format = var.tunnel1_activity_log.cloudwatch.enabled ? var.tunnel1_activity_log.cloudwatch.log_format : null
     }
   }
 
@@ -121,14 +117,10 @@ resource "aws_vpn_connection" "this" {
   tunnel2_enable_tunnel_lifecycle_control = var.tunnel2_tunnel_endpoint_lifecycle_control_enabled
 
   tunnel2_log_options {
-    dynamic "cloudwatch_log_options" {
-      for_each = var.tunnel2_activity_log.cloudwatch.enabled ? [var.tunnel2_activity_log.cloudwatch] : []
-
-      content {
-        log_enabled       = cloudwatch_log_options.value.enabled
-        log_group_arn     = cloudwatch_log_options.value.log_group
-        log_output_format = cloudwatch_log_options.value.log_format
-      }
+    cloudwatch_log_options {
+      log_enabled       = var.tunnel2_activity_log.cloudwatch.enabled
+      log_group_arn     = var.tunnel2_activity_log.cloudwatch.enabled ? var.tunnel2_activity_log.cloudwatch.log_group : null
+      log_output_format = var.tunnel2_activity_log.cloudwatch.enabled ? var.tunnel2_activity_log.cloudwatch.log_format : null
     }
   }
 
