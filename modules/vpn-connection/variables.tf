@@ -316,7 +316,7 @@ variable "tunnel1_ike_rekey" {
   validation {
     condition = alltrue([
       var.tunnel1_ike_rekey.margin_time >= 60,
-      var.tunnel1_ike_rekey.margin_time <= var.tunnel1_ike_phase2.lifetime,
+      var.tunnel1_ike_rekey.margin_time <= var.tunnel1_ike_phase2.lifetime / 2,
     ])
     error_message = "Valid value for `tunnel1_ike_rekey.margin_time` is between `60` and half of phase 2 lifetime."
   }
@@ -595,7 +595,7 @@ variable "tunnel2_ike_rekey" {
   validation {
     condition = alltrue([
       var.tunnel2_ike_rekey.margin_time >= 60,
-      var.tunnel2_ike_rekey.margin_time <= var.tunnel2_ike_phase2.lifetime,
+      var.tunnel2_ike_rekey.margin_time <= var.tunnel2_ike_phase2.lifetime / 2,
     ])
     error_message = "Valid value for `tunnel2_ike_rekey.margin_time` is between `60` and half of phase 2 lifetime."
   }
