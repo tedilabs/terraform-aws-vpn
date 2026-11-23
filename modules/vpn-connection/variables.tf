@@ -99,7 +99,7 @@ variable "target_gateway" {
 
 variable "tunnel_inside_ip_version" {
   description = <<EOF
-  (Optional) The IP address version of the traffic from the VPN tunnels. Valid values are `IPv4` and `IPv6`. Defaults to `IPv4`. Supports only for a `TRANSIT_GATEWAY` type target gateway
+  (Optional) The IP address version of the traffic from the VPN tunnels. Valid values are `IPv4` and `IPv6`. Defaults to `IPv4`. Supports only for a `TRANSIT_GATEWAY` type target gateway.
   EOF
   type        = string
   default     = "IPv4"
@@ -245,7 +245,7 @@ variable "tunnel1_preshared_key" {
 
 variable "tunnel1_startup_action" {
   description = <<EOF
-  (Optional) The action to take when the establishing the tunnel for the first VPN connection. Valid values are `ADD` and `START`. Defaults to `ADD`.
+  (Optional) The action to take when establishing the tunnel for the first VPN connection. Valid values are `ADD` and `START`. Defaults to `ADD`.
     `ADD` - Initiate the IKE negotiation and bring up the tunnel by the customer gateway device.
     `START` - Initiate the IKE negotiation and bring up the tunnel by AWS.
   EOF
@@ -524,7 +524,7 @@ variable "tunnel2_preshared_key" {
 
 variable "tunnel2_startup_action" {
   description = <<EOF
-  (Optional) The action to take when the establishing the tunnel for the second VPN connection. Valid values are `ADD` and `START`. Defaults to `ADD`.
+  (Optional) The action to take when establishing the tunnel for the second VPN connection. Valid values are `ADD` and `START`. Defaults to `ADD`.
     `ADD` - Initiate the IKE negotiation and bring up the tunnel by the customer gateway device.
     `START` - Initiate the IKE negotiation and bring up the tunnel by AWS.
   EOF
@@ -725,7 +725,7 @@ variable "tags" {
 }
 
 variable "module_tags_enabled" {
-  description = "(Optional) Whether to create AWS Resource Tags for the module informations."
+  description = "(Optional) Whether to create AWS Resource Tags for the module information."
   type        = bool
   default     = true
   nullable    = false
@@ -738,7 +738,7 @@ variable "module_tags_enabled" {
 
 variable "resource_group" {
   description = <<EOF
-  (Optional) A configurations of Resource Group for this module. `resource_group` as defined below.
+  (Optional) A configuration of Resource Group for this module. `resource_group` as defined below.
     (Optional) `enabled` - Whether to create Resource Group to find and group AWS resources which are created by this module. Defaults to `true`.
     (Optional) `name` - The name of Resource Group. A Resource Group name can have a maximum of 127 characters, including letters, numbers, hyphens, dots, and underscores. The name cannot start with `AWS` or `aws`. If not provided, a name will be generated using the module name and instance name.
     (Optional) `description` - The description of Resource Group. Defaults to `Managed by Terraform.`.

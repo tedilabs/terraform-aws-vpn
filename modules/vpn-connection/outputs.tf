@@ -167,8 +167,8 @@ output "tunnel1_preshared_key" {
 output "tunnel1_initiation" {
   description = <<EOF
   The initiation options for the first VPN tunnel.
-    `startup_action` - The action to take when the establishing the tunnel for the first VPN connection.
-    `dpd` - The configuration of DPD (Dead Peer Detection) for the the first VPN tunnel.
+    `startup_action` - The action to take when establishing the tunnel for the first VPN connection.
+    `dpd` - The configuration of DPD (Dead Peer Detection) for the first VPN tunnel.
   EOF
   value = {
     startup_action = upper(aws_vpn_connection.this.tunnel1_startup_action)
@@ -260,8 +260,8 @@ output "tunnel2_preshared_key" {
 output "tunnel2_initiation" {
   description = <<EOF
   The initiation options for the second VPN tunnel.
-    `startup_action` - The action to take when the establishing the tunnel for the second VPN connection.
-    `dpd` - The configuration of DPD (Dead Peer Detection) for the the second VPN tunnel.
+    `startup_action` - The action to take when establishing the tunnel for the second VPN connection.
+    `dpd` - The configuration of DPD (Dead Peer Detection) for the second VPN tunnel.
   EOF
   value = {
     startup_action = upper(aws_vpn_connection.this.tunnel2_startup_action)
